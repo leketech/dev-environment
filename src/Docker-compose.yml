@@ -1,0 +1,75 @@
+version: "3.9"
+
+services:
+
+  fastapi:
+
+    build: .
+
+    ports:
+
+      - "80:80"
+
+    depends_on:
+
+      - db
+
+    networks:
+
+      - fastapi-network
+
+    environment:
+
+      - USER=root
+
+      - PASSWORD=root
+
+      - HOST=db
+
+      - DATABASE=fastapi_contact
+
+      - PORT=3307
+
+      - MODULE_NAME=main # add this
+
+      - VARIABLE_NAME=app # add this
+
+      - PORT=80 # add this
+
+  db:
+
+    image: mysql:8.0
+
+    command: --default-authentication-plugin=mysql_native_password
+
+    restart: always
+
+    ports:
+
+      - "3307:3306"
+
+    networks:
+
+      - fastapi-network
+
+    environment:
+
+      - MYSQL_ROOT_PASSWORD=root
+
+      - MYSQL_DATABASE=fastapi_contact
+
+    volumes:
+
+      - db-data:/var/lib/mysql
+
+      - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
+
+networks:
+
+  fastapi-network:
+
+    driver: bridge
+
+volumes:
+
+  db-data:
